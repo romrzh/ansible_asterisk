@@ -1,0 +1,17 @@
+- name: Make libpri dir
+  file: "path=/usr/src/libpri state=directory"
+
+- name: Download libpri
+  get_url: 
+    url: http://downloads.asterisk.org/pub/telephony/libpri/libpri-1.6.0.tar.gz
+    dest: /usr/src/libpri-1.6.0.tar.gz
+
+- name: Unzip libpri
+  unarchive: src=/usr/src/libpri-1.6.0.tar.gz dest=/usr/src/libpri copy=no
+
+- name: Build libpri from tarball
+  command: "{{ item }} chdir=/usr/src/libpri/libpri-1.6.0"
+  with_items:
+    - make
+    - make install
+

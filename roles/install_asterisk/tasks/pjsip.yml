@@ -1,0 +1,19 @@
+- name: Make temp pjproject dir
+  file: "path=/usr/src/pjproject state=directory"
+
+- name: Download pjsip
+  get_url: 
+    url: http://www.pjsip.org/release/2.4.5/pjproject-2.4.5.tar.bz2
+    dest: /usr/src/pjproject.tar.bz2
+
+- name: Unzip pjsip
+  unarchive: src=/usr/src/pjproject.tar.bz2 dest=/usr/src/pjproject copy=no
+
+- name: Build pjsip from tarball
+  command: "{{ item }} chdir=/usr/src/pjproject/pjproject-2.4.5"
+  with_items:
+    - ./configure --prefix=/usr --libdir=/usr/lib64 --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr
+    - make dep
+    - make
+    - make install
+    - ldconfig

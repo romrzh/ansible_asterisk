@@ -1,0 +1,6 @@
+asterisk_user: asterisk
+asterisk_group: asterisk
+asterisk_db_user: asterisk
+asterisk_db_user_password: asterisk
+iasterisk_backup_file: yes
+

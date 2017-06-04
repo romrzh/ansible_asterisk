@@ -1,0 +1,3 @@
+- include: install.yml
+- include: configure_mariadb.yml
+- include: configure.yml

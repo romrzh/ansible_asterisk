@@ -1,0 +1,43 @@
+---
+
+- name: Enable and start mariadb
+  service: 
+    name: mariadb.service
+    enabled: yes
+    state: started
+
+- name: Delete old PearDB
+  pear:
+    name: db
+    state: absent
+
+- name: Update PearDB
+  pear:
+    name: db-1.7.14
+    state: present
+
+- name: Install MySQL-python module
+  yum: "name=MySQL-python state=installed"
+
+- name: Create DB
+  mysql_db:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - asterisk
+    - asteriskcdrdb
+
+- name: Remove all anonymous users from DB
+  mysql_user:
+    name: ''
+    host: localhost
+    state: absent
+
+- name: Add user with all priviliges in DB
+  mysql_user:
+    name: "{{asterisk_db_user}}"
+    password: "{{asterisk_db_user_password}}"
+    priv: '*.*:ALL'
+    state: present
+
+

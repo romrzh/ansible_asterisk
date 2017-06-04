@@ -1,0 +1,18 @@
+- name: Make temp DAHDI dir
+  file: "path=/usr/src/DAHDI state=directory"
+
+- name: download DAHDI
+  get_url: 
+    url: http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
+    dest: /usr/src/dahdi-linux-complete-current.tar.gz
+
+- name: Unzip DAHDI
+  unarchive: src=/usr/src/dahdi-linux-complete-current.tar.gz dest=/usr/src/DAHDI copy=no
+
+- name: Build DAHDI from tarball
+  command: "{{ item }} chdir=/usr/src/DAHDI/dahdi-linux-complete-2.11.1+2.11.1"
+  with_items:
+    - make all
+    - make install
+    - make config
+

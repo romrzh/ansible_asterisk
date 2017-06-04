@@ -1,0 +1,18 @@
+- name: Make temp lame dir
+  file: "path=/usr/src/lame state=directory"
+
+- name: Download lame
+  get_url: 
+    url: http://sourceforge.net/projects/lame/files/lame/3.98.4/lame-3.98.4.tar.gz
+    dest: /usr/src/lame-3.98.4.tar.gz
+
+- name: Unzip lame
+  unarchive: src=/usr/src/lame-3.98.4.tar.gz dest=/usr/src/lame copy=no
+
+- name: Build lame from tarball
+  command: "{{ item }} chdir=/usr/src/lame/lame-3.98.4"
+  with_items:
+    - ./configure
+    - make
+    - make install
+

@@ -1,0 +1,90 @@
+- name: Install libselinux-python
+  yum: "name=libselinux-python state=installed"
+
+- name: Disable seLinux
+  selinux: "state=disabled"
+
+- name: Install EPEL
+  yum: "pkg=epel-release state=installed"
+
+- name: Install asterisk pre-requisites via yum
+  yum: "pkg={{item}} state=installed"
+  with_items:
+    - lynx 
+    - bison 
+    - mariadb-devel 
+    - mariadb-server
+    - mariadb
+    - gmime-devel 
+    - psmisc 
+    - php 
+    - php-mysql 
+    - php-pear 
+    - php-mbstring 
+    - tftp-server 
+    - httpd 
+    - make 
+    - ncurses-devel 
+    - libtermcap-devel 
+    - sendmail 
+    - sendmail-cf 
+    - caching-nameserver 
+    - sox 
+    - newt-devel 
+    - libxml2-devel 
+    - libtiff-devel 
+    - audiofile-devel 
+    - gtk2-devel 
+    - subversion 
+    - kernel-devel  
+    - git 
+    - subversion 
+    - kernel-devel 
+    - php-process 
+    - crontabs 
+    - cronie 
+    - cronie-anacron 
+    - wget 
+    - vim 
+    - php-xml 
+    - uuid-devel 
+    - libtool 
+    - sqlite-devel 
+    - libuuid-devel 
+    - bzip2
+
+- include: pjsip.yml
+- include: jansson.yml
+- include: lame.yml
+- include: DAHDI.yml
+- include: libpri.yml
+
+- name: Make asterisk dir
+  file: "path=/usr/src/asterisk state=directory"
+
+- name: Download Asterisk
+  get_url:
+    url: http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
+    dest: /usr/src/asterisk-13-current.tar.gz
+
+- name: Unzip Asterisk
+  unarchive: src=/usr/src/asterisk-13-current.tar.gz dest=/usr/src/asterisk copy=no
+
+- name: Build Asterisk from tarball
+  command: "{{ item }} chdir=/usr/src/asterisk/asterisk-13.16.0"
+  with_items:
+    - ./configure --libdir=/usr/lib64
+    - make
+    - make install
+    - make samples
+    - make config
+  notify:
+    - restart Asterisk
+
+- name: Check mp3 files
+  file_check: "path=/usr/src/asterisk/asterisk-13.16.0/addons/mp3" 
+  register: output
+
+- name: Get mp3 source
+  command: "contrib/scripts/get_mp3_source.sh chdir=/usr/src/asterisk/asterisk-13.16.0"
+  when: output.status == false
